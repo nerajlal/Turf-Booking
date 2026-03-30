@@ -1,11 +1,9 @@
 @extends('layouts.app')
 
 @section('styles')
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
 <style>
-    .fc-v-event { background-color: #4ade80 !important; border-color: #4ade80 !important; }
-    .fc-timegrid-slot { height: 4em !important; }
-    #calendar { min-height: 600px; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
 @endsection
 
@@ -67,7 +65,7 @@
                                 <span class="text-xs font-black text-playo-green underline decoration-2 underline-offset-4">TOP RATE</span>
                             </div>
                             <div class="flex items-baseline space-x-1">
-                                <span class="text-4xl font-black text-playo-dark tracking-tighter">${{ number_format($turf->price_per_hour, 0) }}</span>
+                                <span class="text-4xl font-black text-playo-dark tracking-tighter">£{{ number_format($turf->price_per_hour, 0) }}</span>
                                 <span class="text-playo-muted font-bold text-sm">/ hour</span>
                             </div>
                         </div>
@@ -136,15 +134,54 @@
             <!-- 1. Selection & Calendar -->
             <div class="card-playo p-8">
                 <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-xl font-black text-playo-dark">1. Select Date & Time</h3>
+                    <h3 class="text-xl font-black text-playo-dark">1. Select Date</h3>
                     <div class="inline-flex items-center px-4 py-1.5 bg-playo-light rounded-full shadow-sm border border-playo-green/10">
-                        <span class="text-[10px] font-black text-playo-green uppercase tracking-widest">Real-time Slots</span>
+                        <span class="text-[10px] font-black text-playo-green uppercase tracking-widest">Available for 7 Days</span>
                     </div>
                 </div>
                 
-                <div id="calendar" class="bg-white rounded-[32px] p-6 border border-gray-100 shadow-inner"></div>
+                <div class="flex space-x-4 overflow-x-auto pb-4 no-scrollbar">
+                    @for($i = 0; $i < 7; $i++)
+                        @php $date = now()->addDays($i); @endphp
+                        <button 
+                            class="date-item flex-shrink-0 w-20 h-24 rounded-2xl border-2 transition-all flex flex-col items-center justify-center space-y-2 {{ $i == 0 ? 'bg-playo-green border-playo-green shadow-xl shadow-playo-green/20' : 'bg-white border-gray-100 hover:border-playo-green/50' }}"
+                            data-date="{{ $date->toDateString() }}"
+                        >
+                            <span class="text-[10px] font-black uppercase tracking-widest {{ $i == 0 ? 'text-white/80' : 'text-playo-muted' }}">
+                                {{ $i == 0 ? 'Today' : $date->format('D') }}
+                            </span>
+                            <span class="text-xl font-black {{ $i == 0 ? 'text-white' : 'text-playo-dark' }}">
+                                {{ $date->format('d') }}
+                            </span>
+                        </button>
+                    @endfor
+                </div>
             </div>
 
+            <!-- 2. Select Slots -->
+            <div class="card-playo p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-black text-playo-dark">2. Choose Slots</h3>
+                    <div class="flex items-center space-x-3">
+                        <div class="flex items-center space-x-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-playo-green"></div>
+                            <span class="text-[10px] font-bold text-playo-muted uppercase tracking-widest">Selection</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-100"></div>
+                            <span class="text-[10px] font-bold text-playo-muted uppercase tracking-widest">Booked</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="slotContainer" class="space-y-10">
+                    <!-- Loaded via JS -->
+                    <div class="flex flex-col items-center justify-center py-20 text-playo-muted">
+                        <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 opacity-20"></i>
+                        <p class="font-bold">Loading live slots...</p>
+                    </div>
+                </div>
+            </div>
 
             <!-- 3. Split Payment Options -->
             <div class="card-playo p-8">
@@ -190,13 +227,13 @@
             <div>
                 <p class="text-[10px] font-black text-playo-muted uppercase tracking-wider mb-1" id="selectedCountText">0 Slots Selected</p>
                 <div class="flex items-baseline space-x-1">
-                    <span class="text-2xl font-black text-playo-dark" id="totalPriceText">$0.00</span>
+                    <span class="text-2xl font-black text-playo-dark" id="totalPriceText">£0.00</span>
                     <span class="text-xs font-bold text-playo-muted">incl. taxes</span>
                 </div>
             </div>
         </div>
         
-        <button class="btn-playo-primary px-10 h-14" id="confirmBookingBtn">
+        <button class="btn-playo btn-playo-primary px-10 h-14" id="confirmBookingBtn">
             PROCEED TO PAY <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
         </button>
     </div>
@@ -205,34 +242,9 @@
 @endsection
 
 @section('scripts')
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 <script>
-    const TURF_ID = {{ $turf->id }};
-    const PRICE_PER_HOUR = {{ $turf->price_per_hour }};
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridDay',
-            slotDuration: '01:00:00',
-            slotMinTime: '{{ $turf->opening_hours ?? "06:00" }}',
-            slotMaxTime: '{{ $turf->closing_hours ?? "23:00" }}',
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'timeGridDay,timeGridWeek'
-            },
-            selectable: true,
-            selectOverlap: false,
-            select: function(info) {
-                // Handle slot selection
-                const start = info.startStr;
-                const end = info.endStr;
-                // Update booking logic here
-            }
-        });
-        calendar.render();
-    });
+    window.TURF_ID = {{ $turf->id }};
+    window.PRICE_PER_HOUR = {{ $turf->price_per_hour }};
 </script>
 <script src="{{ asset('js/booking.js') }}"></script>
 @endsection

@@ -7,7 +7,7 @@ use App\Http\Controllers\HomeController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::get('/turf/{id}', [BookingController::class, 'index'])->name('bookings.index');
+Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
 Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
 
 // Matchmaking
@@ -29,3 +29,8 @@ Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store
 use App\Http\Controllers\PerformanceController;
 Route::get('/performance', [PerformanceController::class, 'index'])->name('performance.index');
 Route::post('/performance', [PerformanceController::class, 'store'])->name('performance.store');
+
+// Events
+use App\Http\Controllers\EventController;
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::post('/events/book/{event}', [EventController::class, 'book'])->name('events.book');

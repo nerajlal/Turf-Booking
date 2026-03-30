@@ -9,24 +9,12 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Turf::query()->active();
-
-        if ($request->filled('search')) {
-            $query->search($request->search);
+        $turf = Turf::active()->first() ?? Turf::first();
+        
+        if (!$turf) {
+            return "Please run 'php artisan db:seed' to create the master turf.";
         }
 
-        if ($request->filled('sport')) {
-            // Assuming we add a 'sport' column or use tags/description
-            $query->where('description', 'LIKE', '%' . $request->sport . '%');
-        }
-
-        if ($request->filled('max_price')) {
-            $query->filterByPrice($request->max_price);
-        }
-
-        $turfs = $query->latest()->paginate(12);
-        $firstTurf = $turfs->first();
-
-        return view('welcome', compact('turfs', 'firstTurf'));
+        return view('welcome', compact('turf'));
     }
 }

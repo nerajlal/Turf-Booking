@@ -43,7 +43,7 @@
             <p class="text-[10px] font-black text-playo-muted uppercase tracking-widest mb-4 italic">{{ $pals->skill_level ?? 'Intermediate' }}</p>
             
             <div class="flex flex-wrap gap-2 justify-center mb-8">
-                @foreach($pals->sports ?? ['Football', 'Cricket'] as $sport)
+                @foreach((array) ($pals->sports ?? ['Football', 'Cricket']) as $sport)
                 <span class="bg-playo-light text-playo-dark text-[10px] font-bold px-3 py-1 rounded-full border border-gray-100">{{ $sport }}</span>
                 @endforeach
             </div>

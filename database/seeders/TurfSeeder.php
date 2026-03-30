@@ -15,33 +15,16 @@ class TurfSeeder extends Seeder
             'latitude' => 54.5973,
             'longitude' => -5.9301,
             'price_per_hour' => 45.00,
-            'description' => 'A state-of-the-art facility featuring 4G astroturf, professional-grade floodlighting, and changing rooms.',
+            'description' => 'A state-of-the-art facility featuring 4G professional astroturf, Olympic-grade floodlighting, and luxury changing rooms. Perfect for competitive leagues, training sessions, and corporate sports events. Our venue is the premier destination for sports enthusiasts in Northern Ireland, offering unmatched pitch quality and amenities.',
             'images' => [
                 '/images/turf_grand_arena.png',
-                '/images/football_field.png'
+                '/images/football_field.png',
+                '/images/hero_sports_ground.png'
             ],
-            'amenities' => ['4G Turf', 'Floodlights', 'Changing Rooms', 'Free Parking', 'Wi-Fi'],
+            'amenities' => ['4G Professional Turf', 'HDR Floodlights', 'Luxury Changing Rooms', 'Free Secure Parking', 'High-Speed Wi-Fi', 'On-site Sports Café', 'Equipment Rental'],
             'opening_hours' => '07:00:00',
             'closing_hours' => '23:00:00',
             'rating_avg' => 4.9,
-            'is_active' => true,
-        ]);
-
-        Turf::create([
-            'name' => 'University Sports Village',
-            'location' => 'Jordanstown, Northern Ireland',
-            'latitude' => 54.6853,
-            'longitude' => -5.9036,
-            'price_per_hour' => 35.00,
-            'description' => 'High-performance sports village with indoor and outdoor pitches for all weather conditions.',
-            'images' => [
-                '/images/turf_university.png',
-                '/images/swimming_pool.png'
-            ],
-            'amenities' => ['Indoor Pitch', 'Gym', 'Shower Facility', 'Cafeteria'],
-            'opening_hours' => '08:00:00',
-            'closing_hours' => '22:00:00',
-            'rating_avg' => 4.7,
             'is_active' => true,
         ]);
     }

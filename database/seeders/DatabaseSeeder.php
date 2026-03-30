@@ -29,7 +29,7 @@ class DatabaseSeeder extends Seeder
                 'name' => $name,
                 'email' => strtolower(str_replace([' ', "'"], ['.', ''], $name)) . '@example.com',
                 'password' => bcrypt('password'),
-                'sports' => ['Football', 'Cricket', 'Badminton'][rand(0, 2)],
+                'sports' => [['Football', 'Cricket', 'Badminton'][rand(0, 2)]],
                 'skill_level' => ['Beginner', 'Intermediate', 'Pro'][rand(0, 2)],
             ]);
         }

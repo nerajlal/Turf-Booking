@@ -20,217 +20,124 @@
                 The world’s largest sports community. Book turfs, courts, and trainers near you in seconds.
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
-                <a href="{{ route('bookings.index', ['id' => $firstTurf->id ?? 1]) }}" class="btn-playo-primary h-16 px-10 text-lg">
-                    BOOK A VENUE <i class="fa-solid fa-arrow-right ml-3"></i>
-                </a>
-                <a href="{{ route('matchmaking.index') }}" class="bg-white/10 backdrop-blur-md border border-white/20 text-white btn-playo h-16 px-10 text-lg hover:bg-white/20 transition-all flex items-center justify-center">
-                    JOIN A GAME
+                <a href="{{ route('bookings.index') }}" class="btn-playo btn-playo-primary h-16 px-10 text-lg">
+                    BOOK A SLOT <i class="fa-solid fa-arrow-right ml-3"></i>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Floating Badge (Playo Style) -->
-    <div class="absolute bottom-10 right-10 hidden xl:flex items-center space-x-4 bg-white p-4 rounded-2xl shadow-2xl animate-bounce-slow">
-        <div class="w-12 h-12 bg-playo-green rounded-xl flex items-center justify-center text-white">
-            <i class="fa-solid fa-mobile-screen-button text-xl"></i>
-        </div>
-        <div>
-            <p class="text-[10px] font-black text-playo-muted uppercase tracking-widest">Get the App</p>
-            <p class="text-xs font-black text-playo-dark leading-tight">SCAN TO DOWNLOAD</p>
-        </div>
-        <div class="w-12 h-12 bg-gray-100 rounded-lg p-1">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=playo" class="w-full h-full" alt="QR">
-        </div>
-    </div>
 </section>
 
-<!-- Search & Filter Section -->
-<section class="relative z-30 -mt-12 mb-20">
+<!-- Details & Features Section -->
+<section id="about" class="py-20 bg-playo-light">
     <div class="container mx-auto px-4">
-        <div class="bg-white rounded-[32px] shadow-2xl p-6 md:p-10 border border-gray-100/50 backdrop-blur-xl">
-            <form action="{{ route('home') }}" method="GET" class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <!-- Global Search -->
-                    <div class="md:col-span-2 relative">
-                        <label class="block text-[11px] font-black text-playo-muted uppercase tracking-[0.2em] mb-2 px-1">Location or Venue</label>
-                        <div class="relative group">
-                            <i class="fa-solid fa-location-dot absolute left-5 top-1/2 -translate-y-1/2 text-playo-green text-lg transition-transform group-focus-within:scale-110"></i>
-                            <input type="text" name="search" placeholder="Try 'Belfast' or 'Powerleague'..." 
-                                class="w-full h-16 pl-14 pr-6 bg-playo-light border-none rounded-2xl font-bold text-playo-dark placeholder:text-playo-muted/60 focus:ring-2 focus:ring-playo-green/20 transition-all text-lg"
-                                value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <!-- Sport Category -->
-                    <div class="relative">
-                        <label class="block text-[11px] font-black text-playo-muted uppercase tracking-[0.2em] mb-2 px-1">Sport</label>
-                        <div class="relative group">
-                            <i class="fa-solid fa-medal absolute left-5 top-1/2 -translate-y-1/2 text-playo-green text-lg transition-transform group-focus-within:scale-110"></i>
-                            <select name="sport" class="w-full h-16 pl-14 pr-10 bg-playo-light border-none rounded-2xl font-bold text-playo-dark appearance-none focus:ring-2 focus:ring-playo-green/20 transition-all text-lg cursor-pointer">
-                                <option value="">Any Sport</option>
-                                <option value="football" {{ request('sport') == 'football' ? 'selected' : '' }}>Football</option>
-                                <option value="badminton" {{ request('sport') == 'badminton' ? 'selected' : '' }}>Badminton</option>
-                                <option value="cricket" {{ request('sport') == 'cricket' ? 'selected' : '' }}>Cricket</option>
-                                <option value="swimming" {{ request('sport') == 'swimming' ? 'selected' : '' }}>Swimming</option>
-                            </select>
-                            <i class="fa-solid fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-playo-muted pointer-events-none"></i>
-                        </div>
-                    </div>
-
-                    <!-- Price Filter -->
-                    <div class="relative">
-                        <label class="block text-[11px] font-black text-playo-muted uppercase tracking-[0.2em] mb-2 px-1">Max Price</label>
-                        <div class="relative group">
-                            <i class="fa-solid fa-sterling-sign absolute left-5 top-1/2 -translate-y-1/2 text-playo-green text-lg transition-transform group-focus-within:scale-110"></i>
-                            <input type="number" name="max_price" placeholder="£50" 
-                                class="w-full h-16 pl-14 pr-6 bg-playo-light border-none rounded-2xl font-bold text-playo-dark placeholder:text-playo-muted/60 focus:ring-2 focus:ring-playo-green/20 transition-all text-lg"
-                                value="{{ request('max_price') }}">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-col md:flex-row items-center justify-between gap-6 pt-2">
-                    <div class="flex items-center space-x-6">
-                        <label class="flex items-center cursor-pointer group">
-                            <div class="relative">
-                                <input type="checkbox" name="active_only" value="1" class="sr-only peer" {{ request('active_only') ? 'checked' : '' }}>
-                                <div class="w-12 h-6 bg-gray-200 rounded-full peer peer-checked:bg-playo-green transition-all duration-300"></div>
-                                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-6"></div>
-                            </div>
-                            <span class="ml-3 text-xs font-black text-playo-dark uppercase tracking-widest">Available Now</span>
-                        </label>
-                        <div class="h-4 w-px bg-gray-200"></div>
-                        <p class="text-[10px] font-bold text-playo-muted uppercase tracking-widest flex items-center">
-                            <i class="fa-solid fa-circle-info mr-2 text-playo-green"></i> 
-                            Focusing on Northern Ireland Venues
-                        </p>
-                    </div>
-                    <button type="submit" class="w-full md:w-auto h-16 px-12 bg-playo-dark hover:bg-playo-dark/90 text-white rounded-2xl font-black text-sm uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center shadow-xl shadow-playo-dark/20">
-                        SEARCH NOW <i class="fa-solid fa-magnifying-glass ml-3"></i>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
-
-<!-- Search Results -->
-@if(request()->anyFilled(['search', 'sport', 'max_price']))
-<section class="py-12 bg-playo-light">
-    <div class="container mx-auto px-4">
-        <div class="flex flex-col lg:flex-row gap-8">
-            <!-- List View -->
-            <div class="lg:w-2/3">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="text-2xl font-black text-playo-dark">
-                        FOUND {{ $turfs->total() ?? 0 }} VENUES 
-                        <span class="text-playo-green ml-2">IN NORTHERN IRELAND</span>
-                    </h2>
-                    <div class="flex items-center space-x-2 text-xs font-black text-playo-muted uppercase tracking-widest">
-                        <span>Sort by:</span>
-                        <select class="bg-transparent border-none focus:ring-0 text-playo-dark font-black cursor-pointer">
-                            <option>Relevance</option>
-                            <option>Price: Low to High</option>
-                            <option>Rating</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    @forelse($turfs as $turf)
-                        <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 group border border-gray-100">
-                            <div class="relative h-48 overflow-hidden">
-                                <img src="{{ $turf->images[0] ?? asset('images/hero_sports_ground.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ $turf->name }}">
-                                <div class="absolute top-4 left-4">
-                                    <span class="px-3 py-1 bg-white/90 backdrop-blur-md rounded-full text-[10px] font-black text-playo-dark uppercase tracking-widest shadow-sm">
-                                        {{ $turf->location }}
-                                    </span>
-                                </div>
-                                @if($turf->rating_avg > 4.5)
-                                <div class="absolute top-4 right-4">
-                                    <span class="px-3 py-1 bg-playo-green rounded-full text-[10px] font-black text-white uppercase tracking-widest shadow-lg">
-                                        Top Rated
-                                    </span>
-                                </div>
-                                @endif
-                            </div>
-                            <div class="p-6">
-                                <div class="flex justify-between items-start mb-2">
-                                    <h3 class="text-xl font-black text-playo-dark group-hover:text-playo-green transition-colors line-clamp-1">{{ $turf->name }}</h3>
-                                    <div class="flex items-center bg-gray-50 px-2 py-1 rounded-lg">
-                                        <i class="fa-solid fa-star text-yellow-400 text-[10px] mr-1"></i>
-                                        <span class="text-xs font-black text-playo-dark">{{ $turf->rating_avg }}</span>
-                                    </div>
-                                </div>
-                                <p class="text-sm font-bold text-playo-muted mb-6 line-clamp-2">{{ $turf->description }}</p>
-                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                                    <div>
-                                        <p class="text-[10px] font-black text-playo-muted uppercase tracking-[0.2em]">Price / Hour</p>
-                                        <p class="text-lg font-black text-playo-dark">£{{ number_format($turf->price_per_hour, 2) }}</p>
-                                    </div>
-                                    <a href="{{ route('bookings.index', $turf->id) }}" class="bg-playo-green/10 hover:bg-playo-green text-playo-green hover:text-white px-6 py-3 rounded-xl font-black text-[11px] uppercase tracking-widest transition-all">
-                                        DETAILS
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @empty
-                        <div class="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-                            <div class="w-20 h-20 bg-playo-light rounded-full flex items-center justify-center text-playo-muted mx-auto mb-6">
-                                <i class="fa-solid fa-magnifying-glass text-3xl"></i>
-                            </div>
-                            <h3 class="text-xl font-black text-playo-dark mb-2">No Venues Found</h3>
-                            <p class="text-sm font-bold text-playo-muted">Try adjusting your filters or searching in a different area.</p>
-                        </div>
-                    @endforelse
-                </div>
-
-                <div class="mt-12">
-                    {{ $turfs->links() }}
-                </div>
-            </div>
-
-            <!-- Map View Placeholder -->
-            <div class="lg:w-1/3">
-                <div class="sticky top-24 h-[600px] bg-white rounded-3xl overflow-hidden shadow-2xl border border-gray-100">
-                    <div class="absolute inset-0 bg-gray-100 flex items-center justify-center overflow-hidden">
-                        <img src="https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-5.93,54.60,11,0/600x800?access_token=pk.placeholder" class="w-full h-full object-cover opacity-50 grayscale" alt="Map">
-                        <div class="absolute inset-0 bg-playo-green/5"></div>
-                        
-                        <div class="relative z-10 text-center px-8">
-                            <div class="w-16 h-16 bg-white rounded-2xl shadow-xl flex items-center justify-center text-playo-green mx-auto mb-6">
-                                <i class="fa-solid fa-map-location-dot text-2xl"></i>
-                            </div>
-                            <h4 class="text-lg font-black text-playo-dark mb-2 tracking-tight">Interactive Map</h4>
-                            <p class="text-xs font-bold text-playo-muted leading-relaxed mb-6">
-                                Connect your Google Maps API key in the `.env` file to enable geolocation services.
+        <div class="flex flex-col lg:flex-row gap-16 items-start">
+            <!-- Left: Gallery & About -->
+            <div class="lg:w-2/3 space-y-12">
+                <div class="relative rounded-[40px] overflow-hidden shadow-2xl bg-white p-2">
+                    <img src="{{ $turf->images[0] ?? asset('images/turf_grand_arena.png') }}" class="w-full h-[500px] object-cover rounded-[32px]" alt="{{ $turf->name }}">
+                    <div class="absolute bottom-10 left-10 right-10">
+                        <div class="glass-playo p-8 rounded-3xl border-white/50">
+                            <h2 class="text-3xl font-black text-playo-dark mb-2">{{ $turf->name }}</h2>
+                            <p class="text-sm font-bold text-playo-muted flex items-center">
+                                <i class="fa-solid fa-location-dot text-playo-green mr-2"></i> {{ $turf->location }}
                             </p>
-                            <div class="inline-flex items-center px-4 py-2 bg-playo-dark text-white rounded-full text-[10px] font-black uppercase tracking-widest">
-                                <span class="w-2 h-2 bg-playo-green rounded-full mr-2 animate-pulse"></span>
-                                Live Venues in NI
-                            </div>
                         </div>
+                    </div>
+                </div>
 
-                        @foreach($turfs as $turf)
-                            <div class="absolute pointer-events-none" style="top: {{ rand(20, 80) }}%; left: {{ rand(20, 80) }}%">
-                                <div class="w-4 h-4 bg-playo-green border-4 border-white rounded-full shadow-lg"></div>
-                            </div>
-                        @endforeach
+                <div class="prose prose-xl max-w-none">
+                    <h3 class="text-2xl font-black text-playo-dark mb-6 uppercase tracking-wider">About Our Venue</h3>
+                    <p class="text-lg text-playo-muted font-bold leading-relaxed">
+                        {{ $turf->description }}
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    @foreach($turf->amenities ?? ['Pro Lighting', 'Changing Rooms', 'Refreshments', 'Free Parking'] as $amenity)
+                    <div class="bg-white p-6 rounded-3xl border border-gray-100 flex flex-col items-center text-center group hover:border-playo-green/30 transition-all">
+                        <div class="w-12 h-12 bg-playo-light rounded-2xl flex items-center justify-center text-playo-green mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-check-circle"></i>
+                        </div>
+                        <span class="text-xs font-black text-playo-dark uppercase tracking-widest">{{ $amenity }}</span>
                     </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <!-- Right: Booking & Quick Info -->
+            <div class="lg:w-1/3 sticky top-24">
+                <div class="bg-playo-dark rounded-[40px] p-10 text-white shadow-2xl relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-playo-green opacity-10 rounded-full -mr-16 -mt-16"></div>
                     
-                    <div class="absolute bottom-6 inset-x-6">
-                        <button class="w-full bg-playo-dark text-white h-14 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center space-x-3 shadow-2xl">
-                            <i class="fa-solid fa-expand"></i>
-                            <span>Fullscreen Map</span>
-                        </button>
+                    <h3 class="text-2xl font-black mb-8 relative z-10">BOOK YOUR SLOT</h3>
+                    
+                    <div class="space-y-6 mb-10 relative z-10">
+                        <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                            <span class="text-xs font-bold text-white/60 uppercase tracking-widest">Price / Hour</span>
+                            <span class="text-2xl font-black text-playo-green">£{{ number_format($turf->price_per_hour, 2) }}</span>
+                        </div>
+                        <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                            <span class="text-xs font-bold text-white/60 uppercase tracking-widest">Opening Hours</span>
+                            <span class="text-sm font-black">{{ $turf->opening_hours ?? '08:00 AM' }} - {{ $turf->closing_hours ?? '10:00 PM' }}</span>
+                        </div>
                     </div>
+
+                    <a href="{{ route('bookings.index') }}" class="btn-playo btn-playo-primary w-full h-16 text-lg shadow-playo-green/20">
+                        CHECK AVAILABILITY
+                    </a>
+
+                    <p class="text-[10px] text-center text-white/40 font-bold uppercase tracking-widest mt-6">
+                        <i class="fa-solid fa-lock mr-2"></i> Secure SSL Booking
+                    </p>
+                </div>
+
+                <div class="mt-8 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
+                    <h4 class="text-sm font-black text-playo-dark mb-4 uppercase tracking-widest">Location</h4>
+                    <div class="h-40 bg-playo-light rounded-2xl mb-4 overflow-hidden relative">
+                         <img src="https://api.mapbox.com/styles/v1/mapbox/light-v10/static/-5.93,54.60,13,0/400x200?access_token=pk.placeholder" class="w-full h-full object-cover grayscale" alt="Map">
+                         <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fa-solid fa-location-dot text-playo-green text-3xl drop-shadow-lg"></i>
+                         </div>
+                    </div>
+                    <p class="text-xs font-bold text-playo-muted text-center leading-relaxed">
+                        {{ $turf->location }}
+                    </p>
                 </div>
             </div>
         </div>
     </div>
 </section>
-@endif
+
+<!-- Gallery Section -->
+<section id="gallery" class="py-20 bg-white overflow-hidden">
+    <div class="container mx-auto px-4">
+        <div class="mb-12 text-center">
+            <h2 class="text-xs font-black text-playo-green uppercase tracking-[0.2em] mb-4">Visual Tour</h2>
+            <h3 class="text-4xl font-black text-playo-dark uppercase tracking-tight">VUE GALLERY</h3>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            <div class="col-span-2 row-span-2 group relative overflow-hidden rounded-[40px] shadow-2xl">
+                <img src="{{ $turf->images[0] ?? asset('images/turf_grand_arena.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Arena 1">
+                <div class="absolute inset-0 bg-gradient-to-t from-playo-dark/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-8">
+                    <p class="text-white font-bold text-lg">Main 4G Pitch</p>
+                </div>
+            </div>
+            <div class="group relative overflow-hidden rounded-[32px] shadow-xl h-64">
+                <img src="{{ $turf->images[1] ?? asset('images/football_field.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Arena 2">
+            </div>
+            <div class="group relative overflow-hidden rounded-[32px] shadow-xl h-64">
+                <img src="{{ $turf->images[2] ?? asset('images/hero_sports_ground.png') }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Arena 3">
+            </div>
+            <div class="col-span-2 group relative overflow-hidden rounded-[32px] shadow-xl h-64 md:h-auto">
+                <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=2000&auto=format&fit=crop" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Arena 4">
+                <div class="absolute inset-0 bg-playo-green/20 mix-blend-overlay"></div>
+            </div>
+        </div>
+    </div>
+</section>
 
 <section class="py-20 bg-white">
     <div class="container mx-auto px-4">
@@ -260,7 +167,7 @@
                 </div>
             </a>
             <!-- Train -->
-            <a href="{{ route('events.index') }}" class="group cursor-pointer">
+            <a href="{{ route('trainers.index') }}" class="group cursor-pointer">
                 <div class="card-playo p-8 text-center border-b-4 border-b-transparent hover:border-b-playo-green transition-all transform hover:-translate-y-2">
                     <div class="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center text-blue-500 mx-auto mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-graduation-cap text-3xl"></i>
@@ -349,7 +256,7 @@
                         <span class="font-black text-xs text-playo-dark">Progress Tracking</span>
                     </div>
                 </div>
-                <button class="btn-playo-outline h-14 px-8 text-sm uppercase tracking-widest">Find a trainer</button>
+                <a href="{{ route('trainers.index') }}" class="btn-playo-outline h-14 px-8 text-sm uppercase tracking-widest inline-flex items-center justify-center">Find a trainer</a>
             </div>
             <div class="lg:w-1/2 relative">
                 <div class="relative z-10 rounded-[40px] overflow-hidden shadow-2xl rotate-3 transform hover:rotate-0 transition-transform duration-500">

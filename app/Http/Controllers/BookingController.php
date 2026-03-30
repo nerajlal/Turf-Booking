@@ -12,41 +12,57 @@ use Stripe\Checkout\Session;
 
 class BookingController extends Controller
 {
-    public function index($id)
+    public function index()
     {
-        $turf = Turf::findOrFail($id);
+        $turf = Turf::active()->first() ?? Turf::first();
+        if (!$turf) {
+            abort(404, 'Turf not found. Please run seeder.');
+        }
         return view('bookings.index', compact('turf'));
     }
 
     public function getSlots(Request $request)
     {
         $turfId = $request->turf_id;
-        $start = $request->start; // FullCalendar sends start/end dates
-        $end = $request->end;
-        
+        $date = $request->date;
+        $turf = Turf::findOrFail($turfId);
+
         $bookings = Booking::where('turf_id', $turfId)
-            ->whereBetween('booking_date', [Carbon::parse($start)->toDateString(), Carbon::parse($end)->toDateString()])
-            ->get(['start_time', 'end_time', 'booking_date']);
+            ->where('booking_date', $date)
+            ->pluck('start_time')
+            ->toArray();
 
-        $events = $bookings->map(function($booking) {
-            return [
-                'title' => 'Booked',
-                'start' => $booking->booking_date . 'T' . $booking->start_time,
-                'end' => $booking->booking_date . 'T' . $booking->end_time,
-                'backgroundColor' => '#f3f4f6',
-                'borderColor' => '#e5e7eb',
-                'textColor' => '#9ca3af',
-                'display' => 'background', // Show as background to prevent selection
+        $slots = [];
+        $startHour = (int) explode(':', $turf->opening_hours ?? '07:00')[0];
+        $endHour = (int) explode(':', $turf->closing_hours ?? '23:00')[0];
+
+        for ($h = $startHour; $h < $endHour; $h++) {
+            $time = str_pad($h, 2, '0', STR_PAD_LEFT) . ':00';
+            $section = $this->getSection($h);
+            
+            $slots[] = [
+                'time' => $time,
+                'section' => $section,
+                'status' => in_array($time, $bookings) ? 'booked' : 'available',
+                'fast_filling' => rand(0, 10) > 8, // Just for UI demo
             ];
-        });
+        }
 
-        return response()->json($events);
+        return response()->json($slots);
+    }
+
+    private function getSection($hour)
+    {
+        if ($hour < 12) return 'Morning';
+        if ($hour < 17) return 'Afternoon';
+        if ($hour < 20) return 'Evening';
+        return 'Night';
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'turf_id' => 'required|exists:turfs,id',
+            'turf_id' => 'exists:turfs,id',
             'user_id' => 'required|exists:users,id',
             'booking_date' => 'required|date',
             'slots' => 'required|array',
@@ -54,7 +70,7 @@ class BookingController extends Controller
             'participants_count' => 'integer|min:1',
         ]);
 
-        $turfId = $validated['turf_id'];
+        $turfId = $validated['turf_id'] ?? (Turf::active()->first()->id ?? Turf::first()->id);
         $date = $validated['booking_date'];
         $slots = $validated['slots'];
         $participantsCount = $validated['participants_count'] ?? 1;
