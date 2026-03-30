@@ -4,7 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BookingController;
 
 Route::get('/', function () {
-    return view('welcome');
+    $firstTurf = \App\Models\Turf::first();
+    return view('welcome', compact('firstTurf'));
 })->name('home');
 
 Route::get('/turf/{id}', [BookingController::class, 'index'])->name('bookings.index');

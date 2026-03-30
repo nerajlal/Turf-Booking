@@ -20,7 +20,7 @@
                 The world’s largest sports community. Book turfs, courts, and trainers near you in seconds.
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
-                <a href="{{ route('bookings.index', ['id' => 1]) }}" class="btn-playo-primary h-16 px-10 text-lg">
+                <a href="{{ route('bookings.index', ['id' => $firstTurf->id ?? 1]) }}" class="btn-playo-primary h-16 px-10 text-lg">
                     BOOK A VENUE <i class="fa-solid fa-arrow-right ml-3"></i>
                 </a>
                 <a href="#" class="bg-white/10 backdrop-blur-md border border-white/20 text-white btn-playo h-16 px-10 text-lg hover:bg-white/20 transition-all">
@@ -57,19 +57,19 @@
                     </div>
                     <h3 class="text-2xl font-black text-playo-dark mb-3">PLAY</h3>
                     <p class="text-sm font-bold text-playo-muted leading-relaxed">
-                        Find sports buddies, join local games, and track your performance.
+                        Find sports buddies, join local games in Bangalore, and track your performance.
                     </p>
                 </div>
             </a>
             <!-- Book -->
-            <a href="{{ route('bookings.index', ['id' => 1]) }}" class="group cursor-pointer">
+            <a href="{{ route('bookings.index', ['id' => $firstTurf->id ?? 1]) }}" class="group cursor-pointer">
                 <div class="card-playo p-8 text-center border-b-4 border-b-transparent hover:border-b-playo-green transition-all transform hover:-translate-y-2">
                     <div class="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center text-playo-green mx-auto mb-6 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-calendar-check text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-black text-playo-dark mb-3">BOOK</h3>
                     <p class="text-sm font-bold text-playo-muted leading-relaxed">
-                        Instant booking for 5000+ premium venues across 50+ cities.
+                        Instant booking for 5000+ premium venues across Bangalore.
                     </p>
                 </div>
             </a>
