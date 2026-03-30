@@ -7,6 +7,90 @@
   --color-playo-light: #F1F3F2;
   
   --font-figtree: "Figtree", sans-serif;
+  --radius-playo: 20px;
 }
+
+@layer base {
+  body {
+    font-family: var(--font-figtree);
+    background-color: white;
+    color: var(--color-playo-dark);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .btn-playo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 700;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-playo:active {
+    transform: scale(0.95);
+  }
+  
+  .btn-playo-primary {
+    background-color: var(--color-playo-green);
+    color: white;
+    box-shadow: 0 4px 0 0 #008f4d;
+  }
+  
+  .btn-playo-primary:hover {
+    background-color: #00a358;
+  }
+  
+  .btn-playo-outline {
+    border: 2px solid var(--color-playo-green);
+    color: var(--color-playo-green);
+  }
+  
+  .btn-playo-outline:hover {
+    background-color: rgba(0, 181, 98, 0.05);
+  }
+  
+  .card-playo {
+    background-color: white;
+    border-radius: var(--radius-playo);
+    border: 1px solid #f3f4f6;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+    overflow: hidden;
+  }
+  
+  .card-playo:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 181, 98, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 181, 98, 0.4);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
 
 
