@@ -31,6 +31,8 @@ Phase 1: Database schema design (Users, Venues, Slots, Bookings, Events, Matches
 Phase 2: Laravel API development and booking logic implementation.
 Phase 3: Stripe payment integration with webhook handling.
 Phase 4: Regional customization for Northern Ireland postcodes and local sports facilities.
+
+
 5. Market Reference Analysis
 Playo – Sports community engagement and matchmaking model.
 Playfinder – UK-focused venue booking with split payments.
