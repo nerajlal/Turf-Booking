@@ -59,17 +59,47 @@ class BookingController extends Controller
             'turf_id' => 'required|exists:turfs,id',
             'user_id' => 'required|exists:users,id',
             'booking_date' => 'required|date',
-            'start_time' => 'required',
-            'end_time' => 'required',
+            'slots' => 'required|array',
             'total_price' => 'required|numeric',
         ]);
 
-        $booking = Booking::create($validated);
+        $turfId = $validated['turf_id'];
+        $date = $validated['booking_date'];
+        $slots = $validated['slots'];
+
+        // Check availability for all selected slots
+        $existingBookings = Booking::where('turf_id', $turfId)
+            ->where('booking_date', $date)
+            ->whereIn('start_time', $slots)
+            ->exists();
+
+        if ($existingBookings) {
+            return response()->json([
+                'success' => false,
+                'message' => 'One or more selected slots are no longer available.'
+            ], 422);
+        }
+
+        // Create bookings
+        foreach ($slots as $startTime) {
+            Booking::create([
+                'turf_id' => $turfId,
+                'user_id' => $validated['user_id'],
+                'booking_date' => $date,
+                'start_time' => $startTime,
+                'end_time' => $this->addOneHour($startTime),
+                'total_price' => $validated['total_price'] / count($slots),
+            ]);
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Booking successful!',
-            'booking' => $booking
         ]);
+    }
+
+    private function addOneHour($time)
+    {
+        return Carbon::parse($time)->addHour()->format('H:i');
     }
 }

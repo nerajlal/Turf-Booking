@@ -1,163 +1,177 @@
 @extends('layouts.app')
 
-@section('styles')
-<style>
-    /* Date Selector */
-    .date-scroller {
-        display: flex;
-        overflow-x: auto;
-        gap: 12px;
-        padding: 10px 0;
-        scrollbar-width: none;
-    }
-    .date-scroller::-webkit-scrollbar {
-        display: none;
-    }
-    .date-item {
-        min-width: 80px;
-        height: 90px;
-        padding: 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border-radius: 16px;
-        border: 1px solid var(--glass-border);
-    }
-    .date-item.active {
-        background: var(--accent-color);
-        border-color: var(--accent-color);
-        box-shadow: 0 0 15px var(--accent-glow);
-        transform: scale(1.05);
-    }
-    .date-item.active .date-day,
-    .date-item.active .date-num {
-        color: var(--bg-color);
-    }
-    .date-day {
-        font-size: 0.75rem;
-        color: var(--text-secondary);
-        font-weight: 500;
-        margin-bottom: 4px;
-    }
-    .date-num {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--text-primary);
-    }
-
-    /* Slot Grid */
-    .slot-badge {
-        width: 100%;
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid var(--accent-color);
-        color: var(--accent-color);
-        background: transparent;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-    .slot-badge:hover:not(.booked) {
-        background: rgba(16, 185, 129, 0.1);
-        transform: translateY(-2px);
-    }
-    .slot-badge.selected {
-        background: var(--accent-color);
-        color: var(--bg-color);
-        box-shadow: 0 0 15px var(--accent-glow);
-    }
-    .slot-badge.booked {
-        border-color: var(--booked-bg);
-        color: var(--text-secondary);
-        background: var(--booked-bg);
-        text-decoration: line-through;
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    .slot-badge .badge-icon {
-        display: none;
-        margin-right: 5px;
-    }
-    .slot-badge.booked .badge-icon {
-        display: inline-block;
-    }
-
-    /* Pricing Floating Footer */
-    .booking-footer {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 90%;
-        max-width: 600px;
-        z-index: 1000;
-        background: rgba(15, 23, 42, 0.9);
-        display: none;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 30px;
-    }
-</style>
-@endsection
-
 @section('content')
-<div class="container">
-    <div class="row">
-        <!-- Turf Details (Left) -->
-        <div class="col-lg-4 mb-4">
-            <div class="glass-card p-4 h-100">
-                <img src="{{ $turf->images[0] }}" class="img-fluid rounded-4 mb-3" alt="{{ $turf->name }}">
-                <h2 class="h4 fw-bold">{{ $turf->name }}</h2>
-                <p class="text-secondary small">
-                    <i class="fa-solid fa-location-dot me-2"></i>{{ $turf->location }}
-                </p>
-                <div class="d-flex align-items-baseline mb-3">
-                    <span class="fs-3 fw-bold text-accent">${{ number_format($turf->price_per_hour, 2) }}</span>
-                    <span class="text-secondary ms-2 small">/ hour</span>
+<div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Turf Details (Left Sidebar) -->
+        <div class="lg:w-1/3 xl:w-1/4">
+            <div class="sticky top-28 space-y-6">
+                <!-- Main Card (Premium) -->
+                <div class="card-playo p-0 overflow-hidden group">
+                    <!-- Gallery Preview -->
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <div id="mainGallery" class="h-full">
+                            @if($turf->images && count($turf->images) > 0)
+                                <img src="{{ $turf->images[0] }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" id="currentImage" alt="{{ $turf->name }}">
+                            @else
+                                <div class="w-full h-full bg-playo-light flex items-center justify-center text-playo-muted">
+                                    <i class="fa-solid fa-image text-4xl opacity-20"></i>
+                                </div>
+                            @endif
+                        </div>
+                        
+                        <div class="absolute top-4 left-4 z-10">
+                            <span class="glass-playo text-playo-dark text-[10px] font-black px-4 py-2 rounded-full shadow-xl border-white/50 backdrop-blur-md">
+                                <i class="fa-solid fa-star text-playo-green mr-1"></i> {{ $turf->rating_avg ?? 'N/A' }}
+                            </span>
+                        </div>
+
+                        <!-- Thumbnails Overlay -->
+                        @if($turf->images && count($turf->images) > 1)
+                        <div class="absolute bottom-4 left-4 right-4 flex gap-2">
+                            @foreach(array_slice($turf->images, 0, 4) as $index => $img)
+                            <div 
+                                class="w-12 h-12 rounded-xl border-2 {{ $index == 0 ? 'border-playo-green' : 'border-white/50' }} overflow-hidden cursor-pointer backdrop-blur-sm transition-all hover:scale-110"
+                                onclick="document.getElementById('currentImage').src = '{{ $img }}'; this.parentElement.querySelectorAll('div').forEach(d => d.classList.remove('border-playo-green')); this.classList.add('border-playo-green');"
+                            >
+                                <img src="{{ $img }}" class="w-full h-full object-cover">
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="flex items-center space-x-2 text-[10px] font-black text-playo-green uppercase tracking-widest mb-3">
+                            <span class="w-2 h-2 rounded-full bg-playo-green animate-pulse"></span>
+                            <span>Open Now</span>
+                        </div>
+                        <h2 class="text-3xl font-black text-playo-dark leading-none mb-3 tracking-tight">{{ $turf->name }}</h2>
+                        <div class="flex items-center text-playo-muted text-xs font-bold mb-8">
+                            <i class="fa-solid fa-location-dot text-playo-green mr-2"></i>
+                            {{ $turf->location }}
+                        </div>
+                        
+                        <div class="p-6 bg-playo-light rounded-[24px] mb-8 border border-gray-100/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-black text-playo-muted uppercase tracking-widest">Price per hour</span>
+                                <span class="text-xs font-black text-playo-green underline decoration-2 underline-offset-4">TOP RATE</span>
+                            </div>
+                            <div class="flex items-baseline space-x-1">
+                                <span class="text-4xl font-black text-playo-dark tracking-tighter">${{ number_format($turf->price_per_hour, 0) }}</span>
+                                <span class="text-playo-muted font-bold text-sm">/ hour</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-5">
+                            <h6 class="text-[10px] uppercase font-black text-playo-dark tracking-widest flex items-center">
+                                <span class="w-8 h-px bg-playo-green mr-3"></span> Amenities
+                            </h6>
+                            <div class="grid grid-cols-2 gap-3">
+                                @if($turf->amenities)
+                                    @foreach($turf->amenities as $amenity)
+                                        <div class="flex items-center space-x-2 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                            <div class="w-6 h-6 rounded-lg bg-green-50 flex items-center justify-center text-playo-green text-[10px]">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-[10px] font-black text-playo-muted truncate">{{ $amenity }}</span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    @foreach(['Floodlights', 'Parking', 'Washroom'] as $default)
+                                        <div class="flex items-center space-x-2 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                            <div class="w-6 h-6 rounded-lg bg-green-50 flex items-center justify-center text-playo-green text-[10px]">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-[10px] font-black text-playo-muted">{{ $default }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-gray-50/50">
+                        <button class="w-full py-4 glass-playo rounded-2xl text-[10px] font-black text-playo-dark uppercase tracking-[0.2em] hover:bg-white transition-all shadow-sm">
+                            Full Venue Details <i class="fa-solid fa-arrow-up-right-from-square ml-2 opacity-30"></i>
+                        </button>
+                    </div>
                 </div>
-                <hr class="border-secondary opacity-25">
-                <h6 class="text-uppercase small fw-bold text-secondary mb-2">Amenities</h6>
-                <div class="d-flex flex-wrap gap-2 mb-4">
-                    <span class="badge bg-secondary bg-opacity-10 py-2 px-3">Floodlights</span>
-                    <span class="badge bg-secondary bg-opacity-10 py-2 px-3">Locker</span>
-                    <span class="badge bg-secondary bg-opacity-10 py-2 px-3">Parking</span>
+
+                <!-- Timing Card -->
+                <div class="glass-playo border-none rounded-[32px] p-6 shadow-xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-sm font-black text-playo-dark">Venue Hours</h4>
+                            <i class="fa-solid fa-clock text-playo-green opacity-30"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-center">
+                                <p class="text-[10px] font-black text-playo-muted uppercase mb-1">Opens</p>
+                                <p class="text-lg font-black text-playo-dark">{{ $turf->opening_hours ?? '06:00' }}</p>
+                            </div>
+                            <div class="h-8 w-px bg-gray-200"></div>
+                            <div class="text-center">
+                                <p class="text-[10px] font-black text-playo-muted uppercase mb-1">Closes</p>
+                                <p class="text-lg font-black text-playo-dark">{{ $turf->closing_hours ?? '23:00' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-playo-green/5 rounded-full blur-2xl"></div>
                 </div>
-                <button class="btn border-secondary text-secondary w-100 py-3 rounded-3 small">
-                    View Details
-                </button>
             </div>
         </div>
 
-        <!-- Booking System (Right) -->
-        <div class="col-lg-8">
-            <div class="glass-card p-4 mb-4">
-                <h6 class="section-header">1. Select Date</h6>
-                <div class="date-scroller" id="dateScroller">
+        <!-- Booking System (Right Content) -->
+        <div class="lg:w-2/3 xl:w-3/4 space-y-8">
+            <!-- 1. Date Selection -->
+            <div class="card-playo p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-black text-playo-dark">1. Select Date</h3>
+                    <div class="text-xs font-bold text-playo-muted flex items-center">
+                        <i class="fa-solid fa-calendar-day mr-2"></i> {{ \Carbon\Carbon::now()->format('F Y') }}
+                    </div>
+                </div>
+                
+                <div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar" id="dateScroller">
                     @for($i = 0; $i < 14; $i++)
-                        @php
-                            $date = \Carbon\Carbon::now()->addDays($i);
-                        @endphp
-                        <div class="date-item {{ $i == 0 ? 'active' : '' }}" data-date="{{ $date->toDateString() }}">
-                            <span class="date-day">{{ $date->format('D') }}</span>
-                            <span class="date-num">{{ $date->format('d') }}</span>
-                        </div>
+                        @php $date = \Carbon\Carbon::now()->addDays($i); @endphp
+                        <button 
+                            class="date-item group flex flex-col items-center justify-center min-w-[70px] h-[90px] rounded-2xl border-2 transition-all duration-200 {{ $i == 0 ? 'bg-playo-green border-playo-green' : 'bg-white border-gray-100 hover:border-playo-green/30' }}" 
+                            data-date="{{ $date->toDateString() }}"
+                        >
+                            <span class="text-[10px] font-black uppercase tracking-widest mb-1 {{ $i == 0 ? 'text-white/80' : 'text-playo-muted group-hover:text-playo-green' }}">
+                                {{ $date->format('D') }}
+                            </span>
+                            <span class="text-xl font-black {{ $i == 0 ? 'text-white' : 'text-playo-dark' }}">
+                                {{ $date->format('d') }}
+                            </span>
+                        </button>
                     @endfor
                 </div>
             </div>
 
-            <div class="glass-card p-4">
-                <h6 class="section-header">2. Available Slots</h6>
-                <div id="slotContainer">
-                    <!-- Dynamic Slots will be injected here -->
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-success" role="status">
-                            <span class="visually-hidden">Loading...</span>
+            <!-- 2. Slot Selection -->
+            <div class="card-playo p-8 min-h-[400px]">
+                <div class="flex items-center justify-between mb-10">
+                    <h3 class="text-xl font-black text-playo-dark">2. Choose Available Slots</h3>
+                    <div class="flex gap-4">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded bg-playo-green"></div>
+                            <span class="text-[10px] font-black text-playo-muted uppercase">Selected</span>
                         </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded bg-gray-100 border border-gray-200"></div>
+                            <span class="text-[10px] font-black text-playo-muted uppercase">Available</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="slotContainer" class="space-y-10">
+                    <!-- Dynamic Slots will be injected here -->
+                    <div class="flex flex-col items-center justify-center py-20 text-playo-muted animate-pulse">
+                        <i class="fa-solid fa-clock-rotate-left text-4xl mb-4 opacity-20"></i>
+                        <p class="font-bold">Fetching latest slots...</p>
                     </div>
                 </div>
             </div>
@@ -166,14 +180,28 @@
 </div>
 
 <!-- Floating Booking Footer -->
-<div class="booking-footer glass-card shadow-lg" id="bookingFooter">
-    <div>
-        <p class="mb-0 text-secondary small" id="selectedCountText">0 Slots Selected</p>
-        <h4 class="mb-0 fw-bold" id="totalPriceText">$0.00</h4>
+<div 
+    class="fixed bottom-8 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-gray-100 p-6 z-[100] transition-all duration-500 translate-y-20 opacity-0 invisible" 
+    id="bookingFooter"
+>
+    <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-6">
+            <div class="w-14 h-14 bg-playo-light rounded-2xl flex items-center justify-center text-playo-green">
+                <i class="fa-solid fa-cart-shopping text-xl"></i>
+            </div>
+            <div>
+                <p class="text-[10px] font-black text-playo-muted uppercase tracking-wider mb-1" id="selectedCountText">0 Slots Selected</p>
+                <div class="flex items-baseline space-x-1">
+                    <span class="text-2xl font-black text-playo-dark" id="totalPriceText">$0.00</span>
+                    <span class="text-xs font-bold text-playo-muted">incl. taxes</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn-playo-primary px-10 h-14" id="confirmBookingBtn">
+            PROCEED TO PAY <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>
+        </button>
     </div>
-    <button class="premium-btn px-5" id="confirmBookingBtn">
-        Book Now <i class="fa-solid fa-arrow-right ms-2"></i>
-    </button>
 </div>
 
 @endsection
@@ -185,3 +213,4 @@
 </script>
 <script src="{{ asset('js/booking.js') }}"></script>
 @endsection
+

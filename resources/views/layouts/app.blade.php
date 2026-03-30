@@ -1,129 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Turf Booking</title>
+    <title>TurfPro | Book Sports Venues & More</title>
     
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Figtree -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-color: #10b981; /* Neon Green */
-            --accent-glow: rgba(16, 185, 129, 0.3);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --selected-bg: #10b981;
-            --booked-bg: #334155;
-            --fast-filling: #ef4444;
-        }
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-        }
 
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-
-        .premium-btn {
-            background: var(--accent-color);
-            border: none;
-            color: var(--bg-color);
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-
-        .premium-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 25px var(--accent-glow);
-            background: #059669;
-        }
-
-        /* Nav Branding */
-        .navbar-brand {
-            font-weight: 700;
-            letter-spacing: -1px;
-            color: var(--accent-color) !important;
-        }
-
-        /* Glassmorphism Sections */
-        .section-header {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            height: 4px;
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--accent-color);
-            border-radius: 10px;
-        }
-
-        @keyframes pulse-border {
-            0% { border-color: var(--accent-color); }
-            50% { border-color: var(--fast-filling); box-shadow: 0 0 8px var(--fast-filling); }
-            100% { border-color: var(--accent-color); }
-        }
-
-        .pulse {
-            animation: pulse-border 2s infinite;
-        }
-    </style>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @yield('styles')
 </head>
-<body>
-    <nav class="navbar navbar-expand-lg border-bottom border-dark py-3">
-        <div class="container">
-            <a class="navbar-brand" href="#">TURF<span class="text-white">PRO</span></a>
-            <div class="ms-auto d-flex align-items-center">
-                <div class="glass-card px-3 py-1 d-none d-md-block">
-                    <span class="text-secondary small">Welcome,</span>
-                    <span class="fw-bold small">Guest</span>
+<body class="h-full bg-white text-playo-dark font-figtree antialiased selection:bg-playo-green selection:text-white">
+    <nav class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm backdrop-blur-md bg-white/90">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & City Selector -->
+                <div class="flex items-center space-x-6">
+                    <a class="flex items-center space-x-2 group" href="/">
+                        <div class="w-10 h-10 bg-playo-green rounded-xl flex items-center justify-center text-white shadow-lg shadow-playo-green/20 group-hover:scale-105 transition-transform duration-200">
+                            <i class="fa-solid fa-ranking-star text-lg"></i>
+                        </div>
+                        <span class="text-2xl font-black tracking-tight text-playo-dark">TURF<span class="text-playo-green">PRO</span></span>
+                    </a>
+
+                    <div class="hidden lg:flex items-center bg-playo-light px-4 py-2 rounded-full border border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors group">
+                        <i class="fa-solid fa-location-dot text-playo-green mr-2 text-sm"></i>
+                        <span class="text-xs font-black text-playo-dark">Bangalore</span>
+                        <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-playo-muted group-hover:text-playo-dark"></i>
+                    </div>
+                </div>
+
+                <!-- Nav Menu (Desktop) -->
+                <div class="hidden md:flex items-center space-x-8 font-bold text-sm tracking-wide">
+                    <a href="#" class="text-playo-green/90 hover:text-playo-green transition-colors">PLAY</a>
+                    <a href="#" class="text-playo-muted hover:text-playo-dark transition-colors">BOOK</a>
+                    <a href="#" class="text-playo-muted hover:text-playo-dark transition-colors">TRAIN</a>
+                </div>
+
+                <!-- User Profile / City -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden sm:flex flex-col text-right">
+                        <span class="text-[10px] uppercase font-bold text-playo-muted leading-tight">Welcome back</span>
+                        <span class="text-sm font-black text-playo-dark">Guest User</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full border-2 border-playo-green/20 p-0.5 hover:border-playo-green transition-colors cursor-pointer">
+                        <img src="https://ui-avatars.com/api/?name=Guest&background=00B562&color=fff" class="rounded-full" alt="User">
+                    </div>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="py-5">
+    <main class="min-h-screen">
         @yield('content')
     </main>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer class="bg-playo-light py-12 mt-20">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-playo-muted font-bold text-sm">© {{ date('Y') }} TurfPro. Redesigned with ❤️ for Sports Lovers.</p>
+        </div>
+    </footer>
+
+    <!-- Moment JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     @yield('scripts')
 </body>
 </html>
+
