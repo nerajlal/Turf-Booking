@@ -42,12 +42,15 @@
 
                 <!-- Nav Menu (Desktop) -->
                 <div class="hidden md:flex items-center space-x-8 font-bold text-sm tracking-wide">
-                    <a href="#" class="text-playo-green/90 hover:text-playo-green transition-colors">PLAY</a>
-                    <a href="#" class="text-playo-muted hover:text-playo-dark transition-colors">BOOK</a>
-                    <a href="#" class="text-playo-muted hover:text-playo-dark transition-colors">TRAIN</a>
+                    @php 
+                        $firstTurfId = \App\Models\Turf::first()->id ?? 1; 
+                    @endphp
+                    <a href="{{ route('matchmaking.index') }}" class="transition-colors {{ request()->routeIs('matchmaking.*') ? 'text-playo-green' : 'text-playo-muted hover:text-playo-dark' }}">PLAY</a>
+                    <a href="{{ route('bookings.index', ['id' => $firstTurfId]) }}" class="transition-colors {{ request()->routeIs('bookings.*') ? 'text-playo-green' : 'text-playo-muted hover:text-playo-dark' }}">BOOK</a>
+                    <a href="{{ route('events.index') }}" class="transition-colors {{ request()->routeIs('events.*') ? 'text-playo-green' : 'text-playo-muted hover:text-playo-dark' }}">TRAIN</a>
                 </div>
 
-                <!-- User Profile / City -->
+                <!-- User Profile / City / Mobile Menu -->
                 <div class="flex items-center space-x-4">
                     <div class="hidden sm:flex flex-col text-right">
                         <span class="text-[10px] uppercase font-bold text-playo-muted leading-tight">Welcome back</span>
@@ -56,8 +59,21 @@
                     <div class="w-10 h-10 rounded-full border-2 border-playo-green/20 p-0.5 hover:border-playo-green transition-colors cursor-pointer">
                         <img src="https://ui-avatars.com/api/?name=Guest&background=00B562&color=fff" class="rounded-full" alt="User">
                     </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="md:hidden text-playo-dark" onclick="toggleMobileMenu()">
+                        <i class="fa-solid fa-bars-staggered text-xl"></i>
+                    </button>
+                    
                 </div>
             </div>
+        </div>
+        
+        <!-- Mobile Navigation -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 p-4 space-y-4 font-bold">
+            <a href="{{ route('matchmaking.index') }}" class="block p-2 rounded-xl {{ request()->routeIs('matchmaking.*') ? 'bg-playo-light text-playo-green' : 'text-playo-dark hover:bg-gray-50' }}">PLAY</a>
+            <a href="{{ route('bookings.index', ['id' => $firstTurfId]) }}" class="block p-2 rounded-xl {{ request()->routeIs('bookings.*') ? 'bg-playo-light text-playo-green' : 'text-playo-dark hover:bg-gray-50' }}">BOOK</a>
+            <a href="{{ route('events.index') }}" class="block p-2 rounded-xl {{ request()->routeIs('events.*') ? 'bg-playo-light text-playo-green' : 'text-playo-dark hover:bg-gray-50' }}">TRAIN</a>
         </div>
     </nav>
 
@@ -73,6 +89,12 @@
 
     <!-- Moment JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+    </script>
     @yield('scripts')
 </body>
 </html>
