@@ -35,7 +35,7 @@
 
                     <div class="hidden lg:flex items-center bg-playo-light px-4 py-2 rounded-full border border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors group">
                         <i class="fa-solid fa-location-dot text-playo-green mr-2 text-sm"></i>
-                        <span class="text-xs font-black text-playo-dark">Bangalore</span>
+                        <span class="text-xs font-black text-playo-dark">Northern Ireland</span>
                         <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-playo-muted group-hover:text-playo-dark"></i>
                     </div>
                 </div>

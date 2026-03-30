@@ -23,7 +23,7 @@
                 <a href="{{ route('bookings.index', ['id' => $firstTurf->id ?? 1]) }}" class="btn-playo-primary h-16 px-10 text-lg">
                     BOOK A VENUE <i class="fa-solid fa-arrow-right ml-3"></i>
                 </a>
-                <a href="#" class="bg-white/10 backdrop-blur-md border border-white/20 text-white btn-playo h-16 px-10 text-lg hover:bg-white/20 transition-all">
+                <a href="{{ route('matchmaking.index') }}" class="bg-white/10 backdrop-blur-md border border-white/20 text-white btn-playo h-16 px-10 text-lg hover:bg-white/20 transition-all flex items-center justify-center">
                     JOIN A GAME
                 </a>
             </div>
@@ -57,7 +57,7 @@
                     </div>
                     <h3 class="text-2xl font-black text-playo-dark mb-3">PLAY</h3>
                     <p class="text-sm font-bold text-playo-muted leading-relaxed">
-                        Find sports buddies, join local games in Bangalore, and track your performance.
+                        Find sports buddies, join local games in Northern Ireland, and track your performance.
                     </p>
                 </div>
             </a>
@@ -69,7 +69,7 @@
                     </div>
                     <h3 class="text-2xl font-black text-playo-dark mb-3">BOOK</h3>
                     <p class="text-sm font-bold text-playo-muted leading-relaxed">
-                        Instant booking for 5000+ premium venues across Bangalore.
+                        Instant booking for premium venues across Northern Ireland.
                     </p>
                 </div>
             </a>

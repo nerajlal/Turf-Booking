@@ -42,7 +42,7 @@
                         <p class="text-[10px] font-black text-playo-muted uppercase tracking-widest mb-1">Entry Fee</p>
                         <p class="text-2xl font-black text-playo-dark">${{ number_format($event->price, 2) }}</p>
                     </div>
-                    <button class="btn-playo-primary px-8 h-12">BOOK NOW</button>
+                    <button onclick="alert('Ticket booking for {{ $event->title }} is currently being processed!')" class="btn-playo-primary px-8 h-12">BOOK NOW</button>
                 </div>
             </div>
         </div>
@@ -69,7 +69,7 @@
                         <p class="text-[10px] font-black text-playo-muted uppercase tracking-widest mb-1">Entry Fee</p>
                         <p class="text-2xl font-black text-playo-dark">$25.00</p>
                     </div>
-                    <button class="btn-playo-primary px-8 h-12">BOOK NOW</button>
+                    <button onclick="alert('Ticket booking for {{ $mockTitle }} is currently being processed!')" class="btn-playo-primary px-8 h-12">BOOK NOW</button>
                 </div>
             </div>
         </div>

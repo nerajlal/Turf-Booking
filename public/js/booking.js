@@ -187,9 +187,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmBookingBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i>SUCCESS!`;
                 confirmBookingBtn.classList.replace('bg-playo-green', 'bg-blue-600');
                 
-                setTimeout(() => {
-                    location.reload();
-                }, 1500);
+                alert('Booking Successful! Your slots have been reserved.');
+                location.reload();
             } else {
                 confirmBookingBtn.disabled = false;
                 confirmBookingBtn.innerHTML = `PROCEED TO PAY <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>`;
