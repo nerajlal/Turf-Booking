@@ -1,0 +1,39 @@
+Feasibility & Technical Architecture Report
+Sports Community Platform – Northern Ireland
+1. Executive Summary
+This report outlines the feasibility, technical architecture, and implementation strategy for building a Sports Community Platform focused on Northern Ireland using HTML and Bootstrap (Frontend), Laravel (Backend), and MySQL (Database). The platform combines venue booking, split payments, sports matchmaking, performance tracking, and event ticketing with QR-based check-in functionality.
+2. Core Features & Implementation Strategy
+2.1 Venue & Trainer Booking System
+The platform will include a searchable map and list-based interface allowing users to filter by sport, price, and location. Google Maps API will be integrated for geolocation services. Laravel Query Scopes will be used to filter venues near users. Venue images will be managed using Spatie Media Library.
+Regional integration will focus on Northern Ireland facilities such as local council sports centers and university sports villages.
+2.2 Split Payment System
+Stripe Connect API will be used to enable group-based split payments. For example, if a £50 pitch is booked by five players, each pays £10. The booking will be confirmed only when the full amount is successfully collected. Webhooks will ensure payment confirmation even if the user exits the browser.
+2.3 MVP System (Ratings, Sports Dating & Performance Tracking)
+A 1–5 star rating system will be implemented using a dedicated ratings table in MySQL linked to user and venue IDs.
+A ‘Find a Playpal’ matchmaking feature will allow users to connect based on sport and skill level. This may include swipe-based discovery or direct messaging.
+Performance tracking will allow users to log speed, distance, and activity metrics. Future mobile integration can utilize GPS APIs for automatic tracking.
+2.4 Event Ticket Booking & QR Code System
+The platform will support ticket sales for local tournaments and sports events. Unique ticket IDs (UUID-based) will be generated and converted into QR codes using Laravel QR libraries. Admins will scan QR codes at event entry to validate check-ins.
+2.5 Calendar & Slot Management
+FullCalendar.js will be integrated on the frontend to display real-time slot availability. A dedicated slots table in MySQL will prevent double bookings. Database transactions will ensure that simultaneous booking attempts do not reserve the same time slot.
+3. Technology Stack Evaluation
+Frontend – HTML & Bootstrap
+Pros: Fast UI rendering, easy to build, universally compatible, and highly customizable.
+Cons: Requires more manual management of dynamic state compared to modern JS frameworks.
+Backend – Laravel
+Pros: Secure routing, strong payment integration, structured MVC architecture.
+Cons: May require additional tools (WebSockets/Pusher) for high-volume real-time chat.
+Database – MySQL
+Pros: Reliable relational database ideal for bookings and payments.
+Cons: Requires optimization for large-scale real-time GPS data.
+4. Development Roadmap
+Phase 1: Database schema design (Users, Venues, Slots, Bookings, Events, Matches, Payments).
+Phase 2: Laravel API development and booking logic implementation.
+Phase 3: Stripe payment integration with webhook handling.
+Phase 4: Regional customization for Northern Ireland postcodes and local sports facilities.
+5. Market Reference Analysis
+Playo – Sports community engagement and matchmaking model.
+Playfinder – UK-focused venue booking with split payments.
+Eventbrite – Event ticketing flow and QR-based check-in system.
+6. Conclusion
+The proposed Sports Community Platform is technically feasible using HTML, Bootstrap, Laravel, and MySQL. With proper payment integration, real-time slot management, and localized Northern Ireland market targeting, the platform can establish a scalable and sustainable sports ecosystem.
