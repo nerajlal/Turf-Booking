@@ -24,13 +24,21 @@
     <nav class="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm backdrop-blur-md bg-white/90">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-20">
-                <!-- Logo -->
-                <a class="flex items-center space-x-2 group" href="/">
-                    <div class="w-10 h-10 bg-playo-green rounded-xl flex items-center justify-center text-white shadow-lg shadow-playo-green/20 group-hover:scale-105 transition-transform duration-200">
-                        <i class="fa-solid fa-ranking-star text-lg"></i>
+                <!-- Logo & City Selector -->
+                <div class="flex items-center space-x-6">
+                    <a class="flex items-center space-x-2 group" href="/">
+                        <div class="w-10 h-10 bg-playo-green rounded-xl flex items-center justify-center text-white shadow-lg shadow-playo-green/20 group-hover:scale-105 transition-transform duration-200">
+                            <i class="fa-solid fa-ranking-star text-lg"></i>
+                        </div>
+                        <span class="text-2xl font-black tracking-tight text-playo-dark">TURF<span class="text-playo-green">PRO</span></span>
+                    </a>
+
+                    <div class="hidden lg:flex items-center bg-playo-light px-4 py-2 rounded-full border border-gray-100 cursor-pointer hover:bg-gray-100 transition-colors group">
+                        <i class="fa-solid fa-location-dot text-playo-green mr-2 text-sm"></i>
+                        <span class="text-xs font-black text-playo-dark">Bangalore</span>
+                        <i class="fa-solid fa-chevron-down ml-2 text-[10px] text-playo-muted group-hover:text-playo-dark"></i>
                     </div>
-                    <span class="text-2xl font-black tracking-tight text-playo-dark">TURF<span class="text-playo-green">PRO</span></span>
-                </a>
+                </div>
 
                 <!-- Nav Menu (Desktop) -->
                 <div class="hidden md:flex items-center space-x-8 font-bold text-sm tracking-wide">

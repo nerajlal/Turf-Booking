@@ -165,35 +165,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-        for (const time of selectedSlots) {
-            try {
-                await fetch('/bookings', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken || ''
-                    },
-                    body: JSON.stringify({
-                        turf_id: TURF_ID,
-                        user_id: 1,
-                        booking_date: currentDate,
-                        start_time: time,
-                        end_time: addOneHour(time),
-                        total_price: PRICE_PER_HOUR
-                    })
-                });
-            } catch (e) {
-                console.error(e);
-            }
-        }
+        try {
+            const response = await fetch('/bookings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken || ''
+                },
+                body: JSON.stringify({
+                    turf_id: TURF_ID,
+                    user_id: 1, // Mock user ID for now
+                    booking_date: currentDate,
+                    slots: selectedSlots,
+                    total_price: selectedSlots.length * PRICE_PER_HOUR
+                })
+            });
 
-        // Show a success state on the button
-        confirmBookingBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i>BOOKED SUCCESSFULLY!`;
-        confirmBookingBtn.classList.replace('bg-playo-green', 'bg-blue-600');
-        
-        setTimeout(() => {
-            location.reload();
-        }, 1500);
+            const result = await response.json();
+
+            if (result.success) {
+                confirmBookingBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i>SUCCESS!`;
+                confirmBookingBtn.classList.replace('bg-playo-green', 'bg-blue-600');
+                
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                confirmBookingBtn.disabled = false;
+                confirmBookingBtn.innerHTML = `PROCEED TO PAY <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>`;
+                alert(result.message || 'Booking failed. One or more slots might have been taken.');
+            }
+        } catch (error) {
+            confirmBookingBtn.disabled = false;
+            confirmBookingBtn.innerHTML = `PROCEED TO PAY <i class="fa-solid fa-arrow-right ml-2 text-sm"></i>`;
+            alert('A network error occurred. Please try again.');
+        }
     });
 
     function addOneHour(time) {

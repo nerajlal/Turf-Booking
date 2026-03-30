@@ -6,53 +6,118 @@
         <!-- Turf Details (Left Sidebar) -->
         <div class="lg:w-1/3 xl:w-1/4">
             <div class="sticky top-28 space-y-6">
-                <!-- Main Card -->
-                <div class="card-playo p-0">
-                    <div class="relative aspect-video overflow-hidden">
-                        <img src="{{ $turf->images[0] }}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105" alt="{{ $turf->name }}">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-playo-green text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-lg">FEATURED</span>
+                <!-- Main Card (Premium) -->
+                <div class="card-playo p-0 overflow-hidden group">
+                    <!-- Gallery Preview -->
+                    <div class="relative aspect-[4/3] overflow-hidden">
+                        <div id="mainGallery" class="h-full">
+                            @if($turf->images && count($turf->images) > 0)
+                                <img src="{{ $turf->images[0] }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" id="currentImage" alt="{{ $turf->name }}">
+                            @else
+                                <div class="w-full h-full bg-playo-light flex items-center justify-center text-playo-muted">
+                                    <i class="fa-solid fa-image text-4xl opacity-20"></i>
+                                </div>
+                            @endif
                         </div>
+                        
+                        <div class="absolute top-4 left-4 z-10">
+                            <span class="glass-playo text-playo-dark text-[10px] font-black px-4 py-2 rounded-full shadow-xl border-white/50 backdrop-blur-md">
+                                <i class="fa-solid fa-star text-playo-green mr-1"></i> {{ $turf->rating_avg ?? 'N/A' }}
+                            </span>
+                        </div>
+
+                        <!-- Thumbnails Overlay -->
+                        @if($turf->images && count($turf->images) > 1)
+                        <div class="absolute bottom-4 left-4 right-4 flex gap-2">
+                            @foreach(array_slice($turf->images, 0, 4) as $index => $img)
+                            <div 
+                                class="w-12 h-12 rounded-xl border-2 {{ $index == 0 ? 'border-playo-green' : 'border-white/50' }} overflow-hidden cursor-pointer backdrop-blur-sm transition-all hover:scale-110"
+                                onclick="document.getElementById('currentImage').src = '{{ $img }}'; this.parentElement.querySelectorAll('div').forEach(d => d.classList.remove('border-playo-green')); this.classList.add('border-playo-green');"
+                            >
+                                <img src="{{ $img }}" class="w-full h-full object-cover">
+                            </div>
+                            @endforeach
+                        </div>
+                        @endif
                     </div>
                     
-                    <div class="p-6">
-                        <h2 class="text-2xl font-black text-playo-dark leading-tight mb-2">{{ $turf->name }}</h2>
-                        <div class="flex items-center text-playo-muted text-sm font-bold mb-6">
+                    <div class="p-8">
+                        <div class="flex items-center space-x-2 text-[10px] font-black text-playo-green uppercase tracking-widest mb-3">
+                            <span class="w-2 h-2 rounded-full bg-playo-green animate-pulse"></span>
+                            <span>Open Now</span>
+                        </div>
+                        <h2 class="text-3xl font-black text-playo-dark leading-none mb-3 tracking-tight">{{ $turf->name }}</h2>
+                        <div class="flex items-center text-playo-muted text-xs font-bold mb-8">
                             <i class="fa-solid fa-location-dot text-playo-green mr-2"></i>
                             {{ $turf->location }}
                         </div>
                         
-                        <div class="flex items-baseline mb-6 space-x-1">
-                            <span class="text-3xl font-black text-playo-dark">${{ number_format($turf->price_per_hour, 0) }}</span>
-                            <span class="text-playo-muted font-bold text-sm">/ hour</span>
+                        <div class="p-6 bg-playo-light rounded-[24px] mb-8 border border-gray-100/50">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-black text-playo-muted uppercase tracking-widest">Price per hour</span>
+                                <span class="text-xs font-black text-playo-green underline decoration-2 underline-offset-4">TOP RATE</span>
+                            </div>
+                            <div class="flex items-baseline space-x-1">
+                                <span class="text-4xl font-black text-playo-dark tracking-tighter">${{ number_format($turf->price_per_hour, 0) }}</span>
+                                <span class="text-playo-muted font-bold text-sm">/ hour</span>
+                            </div>
                         </div>
 
-                        <div class="space-y-4">
-                            <h6 class="text-[10px] uppercase font-black text-playo-muted tracking-widest">Amenities</h6>
-                            <div class="flex flex-wrap gap-2">
-                                @foreach(['Floodlights', 'Locker', 'Parking', 'Washroom'] as $amenity)
-                                    <span class="bg-playo-light text-playo-dark text-[10px] font-extrabold px-3 py-1.5 rounded-full border border-gray-100">{{ $amenity }}</span>
-                                @endforeach
+                        <div class="space-y-5">
+                            <h6 class="text-[10px] uppercase font-black text-playo-dark tracking-widest flex items-center">
+                                <span class="w-8 h-px bg-playo-green mr-3"></span> Amenities
+                            </h6>
+                            <div class="grid grid-cols-2 gap-3">
+                                @if($turf->amenities)
+                                    @foreach($turf->amenities as $amenity)
+                                        <div class="flex items-center space-x-2 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                            <div class="w-6 h-6 rounded-lg bg-green-50 flex items-center justify-center text-playo-green text-[10px]">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-[10px] font-black text-playo-muted truncate">{{ $amenity }}</span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    @foreach(['Floodlights', 'Parking', 'Washroom'] as $default)
+                                        <div class="flex items-center space-x-2 bg-white p-2.5 rounded-xl border border-gray-100 shadow-sm">
+                                            <div class="w-6 h-6 rounded-lg bg-green-50 flex items-center justify-center text-playo-green text-[10px]">
+                                                <i class="fa-solid fa-check"></i>
+                                            </div>
+                                            <span class="text-[10px] font-black text-playo-muted">{{ $default }}</span>
+                                        </div>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                     </div>
 
-                    <div class="border-t border-gray-50 p-4">
-                        <button class="w-full py-3 text-playo-green font-black text-xs uppercase tracking-widest hover:bg-playo-green/5 transition-colors rounded-xl">
-                            View Venue Details <i class="fa-solid fa-chevron-right ml-1"></i>
+                    <div class="p-4 bg-gray-50/50">
+                        <button class="w-full py-4 glass-playo rounded-2xl text-[10px] font-black text-playo-dark uppercase tracking-[0.2em] hover:bg-white transition-all shadow-sm">
+                            Full Venue Details <i class="fa-solid fa-arrow-up-right-from-square ml-2 opacity-30"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Info Card -->
-                <div class="bg-blue-50 border border-blue-100 rounded-playo p-5 flex items-start space-x-4">
-                    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white shrink-0">
-                        <i class="fa-solid fa-circle-info"></i>
+                <!-- Timing Card -->
+                <div class="glass-playo border-none rounded-[32px] p-6 shadow-xl relative overflow-hidden">
+                    <div class="relative z-10">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-sm font-black text-playo-dark">Venue Hours</h4>
+                            <i class="fa-solid fa-clock text-playo-green opacity-30"></i>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-center">
+                                <p class="text-[10px] font-black text-playo-muted uppercase mb-1">Opens</p>
+                                <p class="text-lg font-black text-playo-dark">{{ $turf->opening_hours ?? '06:00' }}</p>
+                            </div>
+                            <div class="h-8 w-px bg-gray-200"></div>
+                            <div class="text-center">
+                                <p class="text-[10px] font-black text-playo-muted uppercase mb-1">Closes</p>
+                                <p class="text-lg font-black text-playo-dark">{{ $turf->closing_hours ?? '23:00' }}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="text-sm font-black text-blue-900 mb-1">Booking Info</h4>
-                        <p class="text-xs font-bold text-blue-700 leading-relaxed">Cancel up to 24 hours before the start time for a full refund.</p>
-                    </div>
+                    <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-playo-green/5 rounded-full blur-2xl"></div>
                 </div>
             </div>
         </div>
