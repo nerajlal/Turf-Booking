@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EventBooking extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'event_id',
@@ -13,11 +16,6 @@ class EventBooking extends Model
         'price_paid',
         'payment_status',
         'booked_at',
-    ];
-
-    protected $casts = [
-        'booked_at' => 'datetime',
-        'price_paid' => 'decimal:2',
     ];
 
     public function user()
