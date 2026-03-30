@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-playo-green: #00B562;
+  --color-playo-dark: #3B4540;
+  --color-playo-muted: #758A80;
+  --color-playo-light: #F1F3F2;
+  
+  --font-figtree: "Figtree", sans-serif;
+}
+
+
