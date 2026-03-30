@@ -1,5 +1,14 @@
 @extends('layouts.app')
 
+@section('styles')
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+<style>
+    .fc-v-event { background-color: #4ade80 !important; border-color: #4ade80 !important; }
+    .fc-timegrid-slot { height: 4em !important; }
+    #calendar { min-height: 600px; }
+</style>
+@endsection
+
 @section('content')
 <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex flex-col lg:flex-row gap-8">
@@ -12,7 +21,7 @@
                     <div class="relative aspect-[4/3] overflow-hidden">
                         <div id="mainGallery" class="h-full">
                             @if($turf->images && count($turf->images) > 0)
-                                <img src="{{ $turf->images[0] }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" id="currentImage" alt="{{ $turf->name }}">
+                                <img src="{{ asset($turf->images[0]) }}" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-110" id="currentImage" alt="{{ $turf->name }}">
                             @else
                                 <div class="w-full h-full bg-playo-light flex items-center justify-center text-playo-muted">
                                     <i class="fa-solid fa-image text-4xl opacity-20"></i>
@@ -32,9 +41,9 @@
                             @foreach(array_slice($turf->images, 0, 4) as $index => $img)
                             <div 
                                 class="w-12 h-12 rounded-xl border-2 {{ $index == 0 ? 'border-playo-green' : 'border-white/50' }} overflow-hidden cursor-pointer backdrop-blur-sm transition-all hover:scale-110"
-                                onclick="document.getElementById('currentImage').src = '{{ $img }}'; this.parentElement.querySelectorAll('div').forEach(d => d.classList.remove('border-playo-green')); this.classList.add('border-playo-green');"
+                                onclick="document.getElementById('currentImage').src = '{{ asset($img) }}'; this.parentElement.querySelectorAll('div').forEach(d => d.classList.remove('border-playo-green')); this.classList.add('border-playo-green');"
                             >
-                                <img src="{{ $img }}" class="w-full h-full object-cover">
+                                <img src="{{ asset($img) }}" class="w-full h-full object-cover">
                             </div>
                             @endforeach
                         </div>
@@ -124,54 +133,43 @@
 
         <!-- Booking System (Right Content) -->
         <div class="lg:w-2/3 xl:w-3/4 space-y-8">
-            <!-- 1. Date Selection -->
+            <!-- 1. Selection & Calendar -->
             <div class="card-playo p-8">
                 <div class="flex items-center justify-between mb-8">
-                    <h3 class="text-xl font-black text-playo-dark">1. Select Date</h3>
-                    <div class="text-xs font-bold text-playo-muted flex items-center">
-                        <i class="fa-solid fa-calendar-day mr-2"></i> {{ \Carbon\Carbon::now()->format('F Y') }}
+                    <h3 class="text-xl font-black text-playo-dark">1. Select Date & Time</h3>
+                    <div class="inline-flex items-center px-4 py-1.5 bg-playo-light rounded-full shadow-sm border border-playo-green/10">
+                        <span class="text-[10px] font-black text-playo-green uppercase tracking-widest">Real-time Slots</span>
                     </div>
                 </div>
                 
-                <div class="flex overflow-x-auto gap-4 pb-4 no-scrollbar" id="dateScroller">
-                    @for($i = 0; $i < 14; $i++)
-                        @php $date = \Carbon\Carbon::now()->addDays($i); @endphp
-                        <button 
-                            class="date-item group flex flex-col items-center justify-center min-w-[70px] h-[90px] rounded-2xl border-2 transition-all duration-200 {{ $i == 0 ? 'bg-playo-green border-playo-green' : 'bg-white border-gray-100 hover:border-playo-green/30' }}" 
-                            data-date="{{ $date->toDateString() }}"
-                        >
-                            <span class="text-[10px] font-black uppercase tracking-widest mb-1 {{ $i == 0 ? 'text-white/80' : 'text-playo-muted group-hover:text-playo-green' }}">
-                                {{ $date->format('D') }}
-                            </span>
-                            <span class="text-xl font-black {{ $i == 0 ? 'text-white' : 'text-playo-dark' }}">
-                                {{ $date->format('d') }}
-                            </span>
-                        </button>
-                    @endfor
-                </div>
+                <div id="calendar" class="bg-white rounded-[32px] p-6 border border-gray-100 shadow-inner"></div>
             </div>
 
-            <!-- 2. Slot Selection -->
-            <div class="card-playo p-8 min-h-[400px]">
-                <div class="flex items-center justify-between mb-10">
-                    <h3 class="text-xl font-black text-playo-dark">2. Choose Available Slots</h3>
-                    <div class="flex gap-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded bg-playo-green"></div>
-                            <span class="text-[10px] font-black text-playo-muted uppercase">Selected</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <div class="w-3 h-3 rounded bg-gray-100 border border-gray-200"></div>
-                            <span class="text-[10px] font-black text-playo-muted uppercase">Available</span>
-                        </div>
+
+            <!-- 3. Split Payment Options -->
+            <div class="card-playo p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h3 class="text-xl font-black text-playo-dark">3. Split Payment (Optional)</h3>
+                    <div class="inline-flex items-center px-3 py-1 bg-playo-green/10 rounded-lg">
+                        <i class="fa-solid fa-users text-playo-green mr-2 text-[10px]"></i>
+                        <span class="text-[10px] font-black text-playo-green uppercase">Group Booking</span>
                     </div>
                 </div>
-
-                <div id="slotContainer" class="space-y-10">
-                    <!-- Dynamic Slots will be injected here -->
-                    <div class="flex flex-col items-center justify-center py-20 text-playo-muted animate-pulse">
-                        <i class="fa-solid fa-clock-rotate-left text-4xl mb-4 opacity-20"></i>
-                        <p class="font-bold">Fetching latest slots...</p>
+                
+                <div class="flex flex-col md:flex-row items-center gap-8">
+                    <div class="flex-1 space-y-2">
+                        <p class="text-sm font-bold text-playo-dark">Number of Players</p>
+                        <p class="text-xs text-playo-muted leading-relaxed">Divide the total cost equally among your friends. Booking is confirmed when everyone pays.</p>
+                    </div>
+                    
+                    <div class="flex items-center bg-playo-light p-2 rounded-2xl border border-gray-100">
+                        <button onclick="updateParticipants(-1)" class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-playo-dark hover:text-playo-green transition-colors">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <input type="number" id="participantsCount" value="1" min="1" max="10" class="w-16 bg-transparent text-center font-black text-xl text-playo-dark focus:outline-none" readonly>
+                        <button onclick="updateParticipants(1)" class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-playo-dark hover:text-playo-green transition-colors">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -207,9 +205,34 @@
 @endsection
 
 @section('scripts')
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
 <script>
     const TURF_ID = {{ $turf->id }};
     const PRICE_PER_HOUR = {{ $turf->price_per_hour }};
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'timeGridDay',
+            slotDuration: '01:00:00',
+            slotMinTime: '{{ $turf->opening_hours ?? "06:00" }}',
+            slotMaxTime: '{{ $turf->closing_hours ?? "23:00" }}',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'timeGridDay,timeGridWeek'
+            },
+            selectable: true,
+            selectOverlap: false,
+            select: function(info) {
+                // Handle slot selection
+                const start = info.startStr;
+                const end = info.endStr;
+                // Update booking logic here
+            }
+        });
+        calendar.render();
+    });
 </script>
 <script src="{{ asset('js/booking.js') }}"></script>
 @endsection

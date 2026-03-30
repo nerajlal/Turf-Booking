@@ -16,7 +16,9 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->decimal('total_price', 10, 2);
-            $table->string('payment_status')->default('pending');
+            $table->string('payment_status')->default('pending'); // 'pending', 'paid', 'split_pending'
+            $table->integer('participants_count')->default(1);
+            $table->decimal('price_per_person', 10, 2)->nullable();
             $table->timestamps();
         });
     }

@@ -48,7 +48,12 @@
                 @endforeach
             </div>
             
-            <button class="w-full btn-playo-outline py-2.5 text-xs">INVITE TO PLAY</button>
+            <button 
+                onclick="sendInvitation(this, {{ $pals->id }}, '{{ $pals->name }}')" 
+                class="w-full btn-playo-outline py-2.5 text-xs transition-all duration-300"
+            >
+                INVITE TO PLAY
+            </button>
         </div>
         @empty
         <div class="col-span-full py-20 text-center text-playo-muted">
@@ -58,4 +63,49 @@
         @endforelse
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+async function sendInvitation(btn, receiverId, name) {
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = 'SENDING...';
+    btn.classList.add('opacity-50');
+
+    try {
+        const response = await fetch(`/matchmaking/invite/${receiverId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ sport: 'Football' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            btn.innerText = 'SENT! ✓';
+            btn.classList.remove('btn-playo-outline', 'opacity-50');
+            btn.classList.add('bg-playo-green', 'text-white', 'border-playo-green');
+            
+            // Show a temporary success toast/alert
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-10 right-10 bg-playo-dark text-white px-6 py-4 rounded-2xl shadow-2xl z-[100] animate-float flex items-center space-x-3 border border-playo-green/20';
+            toast.innerHTML = `<i class="fa-solid fa-circle-check text-playo-green"></i> <span class="font-bold">Invitation sent to ${name}!</span>`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 4000);
+        } else {
+            throw new Error(data.error || 'Failed to send invitation');
+        }
+    } catch (error) {
+        alert(error.message);
+        btn.disabled = false;
+        btn.innerText = originalText;
+        btn.classList.remove('opacity-50');
+    }
+}
+</script>
 @endsection

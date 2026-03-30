@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\MatchInvitation;
 use Illuminate\Http\Request;
 
 class MatchmakingController extends Controller
@@ -16,19 +17,20 @@ class MatchmakingController extends Controller
         return view('matchmaking.index', compact('playpals'));
     }
 
-    public function findPlaypals(Request $request)
+    public function invite(Request $request, User $receiver)
     {
-        $sport = $request->sport;
-        $skillLevel = $request->skill_level;
+        // Mocking sender as user 1
+        $senderId = 1;
 
-        // Mock search logic
-        $playpals = User::where('id', '!=', 1)
-            ->when($sport, function($query) use ($sport) {
-                // In real app, user would have many-to-many sports
-                return $query;
-            })
-            ->get();
+        if ($senderId == $receiver->id) {
+            return response()->json(['error' => 'You cannot invite yourself.'], 400);
+        }
 
-        return response()->json($playpals);
+        $invitation = MatchInvitation::updateOrCreate(
+            ['sender_id' => $senderId, 'receiver_id' => $receiver->id],
+            ['sport' => $request->sport ?? 'Football', 'status' => 'pending']
+        );
+
+        return response()->json(['success' => 'Invitation sent to ' . $receiver->name]);
     }
 }

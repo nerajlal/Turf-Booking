@@ -32,6 +32,27 @@ class Turf extends Model
         'is_active' => 'boolean',
     ];
 
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) return $query;
+        return $query->where(function($q) use ($search) {
+            $q->where('name', 'LIKE', "%$search%")
+              ->orWhere('location', 'LIKE', "%$search%")
+              ->orWhere('description', 'LIKE', "%$search%");
+        });
+    }
+
+    public function scopeFilterByPrice($query, $maxPrice)
+    {
+        if (!$maxPrice) return $query;
+        return $query->where('price_per_hour', '<=', $maxPrice);
+    }
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);

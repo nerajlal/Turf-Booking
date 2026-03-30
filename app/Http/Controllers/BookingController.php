@@ -6,6 +6,9 @@ use App\Models\Turf;
 use App\Models\Booking;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
 
 class BookingController extends Controller
 {
@@ -18,39 +21,26 @@ class BookingController extends Controller
     public function getSlots(Request $request)
     {
         $turfId = $request->turf_id;
-        $date = $request->date;
+        $start = $request->start; // FullCalendar sends start/end dates
+        $end = $request->end;
         
         $bookings = Booking::where('turf_id', $turfId)
-            ->where('booking_date', $date)
-            ->get(['start_time', 'end_time']);
+            ->whereBetween('booking_date', [Carbon::parse($start)->toDateString(), Carbon::parse($end)->toDateString()])
+            ->get(['start_time', 'end_time', 'booking_date']);
 
-        $bookedSlots = $bookings->map(function($booking) {
-            return Carbon::parse($booking->start_time)->format('H:i');
-        })->toArray();
+        $events = $bookings->map(function($booking) {
+            return [
+                'title' => 'Booked',
+                'start' => $booking->booking_date . 'T' . $booking->start_time,
+                'end' => $booking->booking_date . 'T' . $booking->end_time,
+                'backgroundColor' => '#f3f4f6',
+                'borderColor' => '#e5e7eb',
+                'textColor' => '#9ca3af',
+                'display' => 'background', // Show as background to prevent selection
+            ];
+        });
 
-        $sections = [
-            'Morning' => ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00'],
-            'Afternoon' => ['12:00', '13:00', '14:00', '15:00'],
-            'Evening' => ['16:00', '17:00', '18:00', '19:00'],
-            'Night' => ['20:00', '21:00', '22:00', '23:00'],
-        ];
-
-        $slots = [];
-        foreach ($sections as $sectionName => $times) {
-            foreach ($times as $time) {
-                $isBooked = in_array($time, $bookedSlots);
-                $isFastFilling = !$isBooked && rand(0, 10) > 7; // Mock "Fast Filling" logic
-
-                $slots[] = [
-                    'time' => $time,
-                    'section' => $sectionName,
-                    'status' => $isBooked ? 'booked' : 'available',
-                    'fast_filling' => $isFastFilling
-                ];
-            }
-        }
-
-        return response()->json($slots);
+        return response()->json($events);
     }
 
     public function store(Request $request)
@@ -61,41 +51,62 @@ class BookingController extends Controller
             'booking_date' => 'required|date',
             'slots' => 'required|array',
             'total_price' => 'required|numeric',
+            'participants_count' => 'integer|min:1',
         ]);
 
         $turfId = $validated['turf_id'];
         $date = $validated['booking_date'];
         $slots = $validated['slots'];
+        $participantsCount = $validated['participants_count'] ?? 1;
+        $totalPrice = $validated['total_price'];
+        $pricePerPerson = $totalPrice / $participantsCount;
 
-        // Check availability for all selected slots
-        $existingBookings = Booking::where('turf_id', $turfId)
-            ->where('booking_date', $date)
-            ->whereIn('start_time', $slots)
-            ->exists();
+        DB::beginTransaction();
+        try {
+            // Check availability and create bookings
+            foreach ($slots as $startTime) {
+                $exists = Booking::where('turf_id', $turfId)
+                    ->where('booking_date', $date)
+                    ->where('start_time', $startTime)
+                    ->exists();
 
-        if ($existingBookings) {
+                if ($exists) {
+                    throw new \Exception("Slot $startTime is already booked.");
+                }
+
+                Booking::create([
+                    'turf_id' => $turfId,
+                    'user_id' => $validated['user_id'],
+                    'booking_date' => $date,
+                    'start_time' => $startTime,
+                    'end_time' => $this->addOneHour($startTime),
+                    'total_price' => $totalPrice / count($slots),
+                    'participants_count' => $participantsCount,
+                    'price_per_person' => $pricePerPerson / count($slots),
+                    'payment_status' => $participantsCount > 1 ? 'split_pending' : 'paid',
+                ]);
+            }
+
+            // Stripe Integration (Simplified for now, using Session)
+            // Stripe::setApiKey(env('STRIPE_SECRET'));
+            // Logic to create Checkout Session would go here...
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => $participantsCount > 1 
+                    ? "Booking initiated! Split payment of £" . number_format($pricePerPerson, 2) . " per person generated."
+                    : 'Booking successful!',
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
-                'message' => 'One or more selected slots are no longer available.'
+                'message' => $e->getMessage()
             ], 422);
         }
-
-        // Create bookings
-        foreach ($slots as $startTime) {
-            Booking::create([
-                'turf_id' => $turfId,
-                'user_id' => $validated['user_id'],
-                'booking_date' => $date,
-                'start_time' => $startTime,
-                'end_time' => $this->addOneHour($startTime),
-                'total_price' => $validated['total_price'] / count($slots),
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Booking successful!',
-        ]);
     }
 
     private function addOneHour($time)

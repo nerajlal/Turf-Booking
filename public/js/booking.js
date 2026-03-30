@@ -145,12 +145,30 @@ document.addEventListener('DOMContentLoaded', function () {
         updateFooter();
     };
 
+    window.updateParticipants = function(delta) {
+        const input = document.getElementById('participantsCount');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        if (val > 10) val = 10;
+        input.value = val;
+        updateFooter();
+    };
+
     function updateFooter() {
+        const participants = parseInt(document.getElementById('participantsCount')?.value || 1);
         if (selectedSlots.length > 0) {
             bookingFooter.classList.remove('translate-y-20', 'opacity-0', 'invisible');
             bookingFooter.classList.add('translate-y-0', 'opacity-100', 'visible');
+            
             selectedCountText.innerText = `${selectedSlots.length} Slot(s) Selected`;
-            totalPriceText.innerText = `$${(selectedSlots.length * PRICE_PER_HOUR).toFixed(2)}`;
+            const total = selectedSlots.length * PRICE_PER_HOUR;
+            
+            if (participants > 1) {
+                const perPerson = total / participants;
+                totalPriceText.innerHTML = `£${total.toFixed(2)} <span class="text-xs font-bold text-playo-green ml-2">(£${perPerson.toFixed(2)} per person)</span>`;
+            } else {
+                totalPriceText.innerText = `£${total.toFixed(2)}`;
+            }
         } else {
             bookingFooter.classList.add('translate-y-20', 'opacity-0', 'invisible');
             bookingFooter.classList.remove('translate-y-0', 'opacity-100', 'visible');
@@ -160,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     confirmBookingBtn.addEventListener('click', async function () {
         if (selectedSlots.length === 0) return;
 
+        const participants = parseInt(document.getElementById('participantsCount')?.value || 1);
         confirmBookingBtn.disabled = true;
         confirmBookingBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-2"></i>PROCESSING...`;
 
@@ -177,7 +196,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     user_id: 1, // Mock user ID for now
                     booking_date: currentDate,
                     slots: selectedSlots,
-                    total_price: selectedSlots.length * PRICE_PER_HOUR
+                    total_price: selectedSlots.length * PRICE_PER_HOUR,
+                    participants_count: participants
                 })
             });
 
@@ -187,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 confirmBookingBtn.innerHTML = `<i class="fa-solid fa-check mr-2"></i>SUCCESS!`;
                 confirmBookingBtn.classList.replace('bg-playo-green', 'bg-blue-600');
                 
-                alert('Booking Successful! Your slots have been reserved.');
+                alert(result.message);
                 location.reload();
             } else {
                 confirmBookingBtn.disabled = false;

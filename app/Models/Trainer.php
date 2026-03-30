@@ -24,4 +24,24 @@ class Trainer extends Model
         'rating_avg' => 'decimal:2',
         'is_active' => 'boolean',
     ];
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if (!$search) return $query;
+        return $query->where(function($q) use ($search) {
+            $q->where('name', 'LIKE', "%$search%")
+              ->orWhere('specialization', 'LIKE', "%$search%")
+              ->orWhere('bio', 'LIKE', "%$search%");
+        });
+    }
+
+    public function scopeFilterByRate($query, $maxRate)
+    {
+        if (!$maxRate) return $query;
+        return $query->where('hourly_rate', '<=', $maxRate);
+    }
 }
