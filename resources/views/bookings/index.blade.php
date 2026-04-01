@@ -222,13 +222,31 @@
                 center: 'title',
                 right: 'timeGridDay,timeGridWeek'
             },
+            events: '/api/slots?turf_id=' + TURF_ID,
             selectable: true,
             selectOverlap: false,
             select: function(info) {
-                // Handle slot selection
-                const start = info.startStr;
-                const end = info.endStr;
-                // Update booking logic here
+                // Determine selected slots (1-hour blocks)
+                const start = new Date(info.start);
+                const end = new Date(info.end);
+                const slots = [];
+                
+                let current = new Date(start);
+                while (current < end) {
+                    const timeStr = current.toTimeString().substring(0, 5);
+                    slots.push(timeStr);
+                    current.setHours(current.getHours() + 1);
+                }
+
+                // Update global state in booking.js
+                if (window.setSelectedSlots) {
+                    window.setSelectedSlots(slots, info.startStr.split('T')[0]);
+                }
+            },
+            unselect: function() {
+                if (window.setSelectedSlots) {
+                    window.setSelectedSlots([], null);
+                }
             }
         });
         calendar.render();
